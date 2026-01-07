@@ -159,6 +159,7 @@ void model_train(
 void draw_mnist_digit(f32* data);
 void create_mnist_model(mem_arena* arena, model_context* model);
 
+#ifndef TEST_BUILD
 int main(void) {
     mem_arena* perm_arena = arena_create(GiB(1), MiB(1));
 
@@ -249,6 +250,7 @@ int main(void) {
 
     return 0;
 }
+#endif // TEST_BUILD
 
 void draw_mnist_digit(f32* data) {
     for (u32 y = 0; y < 28; y++) {
@@ -296,6 +298,7 @@ void create_mnist_model(mem_arena* arena, model_context* model) {
     model_var* y = mv_create(arena, model, 10, 1, MV_FLAG_DESIRED_OUTPUT);
 
     model_var* cost = mv_cross_entropy(arena, model, y, output, MV_FLAG_COST);
+    (void)cost; // Intentionally unused - stored in model context
 }
 
 matrix* mat_create(mem_arena* arena, u32 rows, u32 cols) {
@@ -534,12 +537,12 @@ b32 mat_mul(
         mat_clear(out);
     }
 
-    u32 transpose = (transpose_a << 1) | transpose_b;
+    u32 transpose = ((u32)transpose_a << 1) | (u32)transpose_b;
     switch (transpose) {
-        case 0b00: { _mat_mul_nn(out, a, b); } break;
-        case 0b01: { _mat_mul_nt(out, a, b); } break;
-        case 0b10: { _mat_mul_tn(out, a, b); } break;
-        case 0b11: { _mat_mul_tt(out, a, b); } break;
+        case 0x00: { _mat_mul_nn(out, a, b); } break; // 0b00
+        case 0x01: { _mat_mul_nt(out, a, b); } break; // 0b01
+        case 0x02: { _mat_mul_tn(out, a, b); } break; // 0b10
+        case 0x03: { _mat_mul_tt(out, a, b); } break; // 0b11
     }
 
     return true;

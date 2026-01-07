@@ -2,6 +2,7 @@
 *.out
 *.exe
 mlai
+mlai_test
 a.out
 
 # Object files

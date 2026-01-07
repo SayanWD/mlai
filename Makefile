@@ -3,7 +3,9 @@
 
 CC = gcc
 TARGET = mlai
+TEST_TARGET = mlai_test
 SOURCES = main.c
+TEST_SOURCES = test.c
 HEADERS = base.h arena.h prng.h
 
 # Security-hardened compiler flags
@@ -55,6 +57,15 @@ msan: $(TARGET)
 $(TARGET): $(SOURCES) $(HEADERS)
 	$(CC) $(CFLAGS) $(SOURCES) -o $(TARGET) $(LDFLAGS)
 
+# Test target - compile test and link with matrix operations from main.c
+$(TEST_TARGET): test_simple.c $(SOURCES) $(HEADERS)
+	$(CC) $(CFLAGS) -DTEST_BUILD test_simple.c $(SOURCES) -o $(TEST_TARGET) $(LDFLAGS)
+
+# Build and run tests
+.PHONY: test
+test: $(TEST_TARGET)
+	./$(TEST_TARGET)
+
 # Data preparation
 .PHONY: data
 data:
@@ -69,7 +80,7 @@ run: $(TARGET)
 # Clean build artifacts
 .PHONY: clean
 clean:
-	rm -f $(TARGET) *.o *.out
+	rm -f $(TARGET) $(TEST_TARGET) *.o *.out
 
 # Clean everything including data files
 .PHONY: cleanall
@@ -106,6 +117,7 @@ help:
 	@echo "  release       - Build optimized release version"
 	@echo "  asan          - Build with AddressSanitizer"
 	@echo "  msan          - Build with MemorySanitizer"
+	@echo "  test          - Build and run unit tests"
 	@echo "  data          - Prepare MNIST dataset"
 	@echo "  run           - Build and run the program"
 	@echo "  clean         - Remove build artifacts"

@@ -17,8 +17,8 @@ void prng_seed(u64 initstate, u64 initseq) {
 u32 prng_rand_r(prng_state* rng) {
     u64 oldstate = rng->state;
     rng->state = oldstate * 6364136223846793005ULL + rng->inc;
-    u32 xorshifted = ((oldstate >> 18u) ^ oldstate) >> 27u;
-    u32 rot = oldstate >> 59u;
+    u32 xorshifted = (u32)((((oldstate >> 18u) ^ oldstate) >> 27u) & 0xFFFFFFFFULL);
+    u32 rot = (u32)(oldstate >> 59u);
     return (xorshifted >> rot) | (xorshifted << ((-rot) & 31));
 }
 
