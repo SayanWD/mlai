@@ -3,6 +3,7 @@
 *.exe
 mlai
 mlai_test
+mlai_test_corrupted
 a.out
 
 # Object files
@@ -48,10 +49,13 @@ env/
 *.temp
 *.log
 
-# Model checkpoints and weights (if added later)
+# Model checkpoints and weights
 *.ckpt
 *.h5
 *.weights
+*.mlai
+test_model.mlai
+valid_model.mlai
 
 # System files
 Thumbs.db

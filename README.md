@@ -53,6 +53,19 @@ make release
 make asan
 ```
 
+### Testing
+
+Run all tests:
+```bash
+make test
+```
+
+Run specific test suites:
+```bash
+make test-unit          # Unit tests only (12 tests)
+make test-corrupted     # Corrupted data tests (9 tests)
+```
+
 ### Running
 
 ```bash
@@ -71,14 +84,28 @@ Expected accuracy: ~86-89% on test set
 
 ```
 mlai/
-├── main.c          # Core implementation
-├── arena.c         # Memory allocator
-├── prng.c          # Random number generator
-├── *.h             # Header files
-├── mnist.py        # Data preparation script
-├── Makefile        # Build system
-└── README.md       # This file
+├── main.c              # Core implementation
+├── arena.c/h           # Memory allocator
+├── prng.c/h            # Random number generator
+├── model_io.c/h        # Model save/load
+├── matrix.h            # Matrix API
+├── test_simple.c       # Unit tests
+├── test_corrupted.c    # Corrupted data tests
+├── mnist.py            # Data preparation script
+├── Makefile            # Build system
+└── README.md           # This file
 ```
+
+## Features
+
+- ✅ Custom matrix operations library
+- ✅ Automatic differentiation (computational graph)
+- ✅ Neural network training (SGD optimizer)
+- ✅ **Model save/load** (binary format with checksums)
+- ✅ **Comprehensive test suite** (21 tests)
+- ✅ Memory-safe arena allocator
+- ✅ Cross-platform support (Windows/Linux/macOS)
+- ✅ Security-hardened build configuration
 
 ## Model Architecture
 
@@ -108,12 +135,34 @@ See [SECURITY.md](SECURITY.md) for detailed security information.
 make              # Build with debug symbols
 make release      # Optimized release build
 make asan         # Build with AddressSanitizer
+make test         # Run all tests (21 tests)
+make test-unit    # Run unit tests only (12 tests)
+make test-corrupted  # Run corrupted data tests (9 tests)
 make test-asan    # Run with AddressSanitizer
 make data         # Prepare MNIST dataset
 make clean        # Remove build artifacts
 make cleanall     # Remove build artifacts and data
 make analyze      # Static analysis (requires cppcheck)
 make security-check  # Run security checks
+```
+
+### Model Save/Load API
+
+```c
+#include "model_io.h"
+
+// Save model parameters
+matrix* params[3] = {W0, W1, W2};
+model_save("my_model.mlai", params, 3);
+
+// Load model parameters
+matrix* loaded_params[3] = {NULL, NULL, NULL};
+model_load(arena, "my_model.mlai", loaded_params, 3);
+
+// Validate model file
+if (model_validate("my_model.mlai")) {
+    printf("Model file is valid\n");
+}
 ```
 
 ### Testing

@@ -4,9 +4,11 @@
 CC = gcc
 TARGET = mlai
 TEST_TARGET = mlai_test
+TEST_CORRUPTED_TARGET = mlai_test_corrupted
 SOURCES = main.c
+MODEL_IO_SOURCES = model_io.c
 TEST_SOURCES = test.c
-HEADERS = base.h arena.h prng.h
+HEADERS = base.h arena.h prng.h matrix.h model_io.h
 
 # Security-hardened compiler flags
 CFLAGS = -std=c11 \
@@ -61,10 +63,28 @@ $(TARGET): $(SOURCES) $(HEADERS)
 $(TEST_TARGET): test_simple.c $(SOURCES) $(HEADERS)
 	$(CC) $(CFLAGS) -DTEST_BUILD test_simple.c $(SOURCES) -o $(TEST_TARGET) $(LDFLAGS)
 
-# Build and run tests
+# Corrupted data test target
+$(TEST_CORRUPTED_TARGET): test_corrupted.c $(SOURCES) $(MODEL_IO_SOURCES) $(HEADERS)
+	$(CC) $(CFLAGS) -DTEST_BUILD test_corrupted.c $(SOURCES) $(MODEL_IO_SOURCES) -o $(TEST_CORRUPTED_TARGET) $(LDFLAGS)
+
+# Build and run all tests
 .PHONY: test
-test: $(TEST_TARGET)
+test: $(TEST_TARGET) $(TEST_CORRUPTED_TARGET)
+	@echo "Running unit tests..."
 	./$(TEST_TARGET)
+	@echo ""
+	@echo "Running corrupted data tests..."
+	./$(TEST_CORRUPTED_TARGET)
+
+# Run only unit tests
+.PHONY: test-unit
+test-unit: $(TEST_TARGET)
+	./$(TEST_TARGET)
+
+# Run only corrupted data tests
+.PHONY: test-corrupted
+test-corrupted: $(TEST_CORRUPTED_TARGET)
+	./$(TEST_CORRUPTED_TARGET)
 
 # Data preparation
 .PHONY: data
@@ -80,7 +100,7 @@ run: $(TARGET)
 # Clean build artifacts
 .PHONY: clean
 clean:
-	rm -f $(TARGET) $(TEST_TARGET) *.o *.out
+	rm -f $(TARGET) $(TEST_TARGET) $(TEST_CORRUPTED_TARGET) *.o *.out *.mlai
 
 # Clean everything including data files
 .PHONY: cleanall
@@ -117,7 +137,9 @@ help:
 	@echo "  release       - Build optimized release version"
 	@echo "  asan          - Build with AddressSanitizer"
 	@echo "  msan          - Build with MemorySanitizer"
-	@echo "  test          - Build and run unit tests"
+	@echo "  test          - Build and run all tests"
+	@echo "  test-unit     - Run only unit tests"
+	@echo "  test-corrupted - Run only corrupted data tests"
 	@echo "  data          - Prepare MNIST dataset"
 	@echo "  run           - Build and run the program"
 	@echo "  clean         - Remove build artifacts"
