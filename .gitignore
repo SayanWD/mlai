@@ -1,0 +1,56 @@
+# Compiled binaries
+*.out
+*.exe
+mlai
+a.out
+
+# Object files
+*.o
+*.obj
+
+# Dataset files (can be large)
+*.mat
+train_images.mat
+train_labels.mat
+test_images.mat
+test_labels.mat
+
+# Python cache
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+
+# Virtual environments
+venv/
+ENV/
+env/
+.venv
+
+# IDE and editor files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+
+# Debug files
+*.dSYM/
+*.su
+*.idb
+*.pdb
+
+# Temporary files
+*.tmp
+*.temp
+*.log
+
+# Model checkpoints and weights (if added later)
+*.ckpt
+*.h5
+*.weights
+
+# System files
+Thumbs.db
